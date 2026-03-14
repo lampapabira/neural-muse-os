@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Muse - Dashboard OFM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        .gradient-text { background: linear-gradient(90deg, #f472b6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen font-sans">
+    <div class="max-w-3xl mx-auto px-4 py-10">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-black mb-2 gradient-text">NEURAL MUSE OS</h1>
+            <p class="text-slate-500 uppercase tracking-widest text-xs">Plateforme d'Assistance OFM v1.0</p>
+        </header>
+
+        <div class="grid gap-8">
+            <section class="glass p-8 rounded-2xl border border-slate-800 shadow-2xl">
+                <div class="flex items-center mb-6">
+                    <span class="bg-pink-500/20 text-pink-400 p-2 rounded-lg mr-4">📸</span>
+                    <h2 class="text-xl font-bold">Magic Prompt</h2>
+                </div>
+                <textarea id="pInput" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-sm focus:border-pink-500 outline-none transition mb-4" rows="3" placeholder="Idée brute : Blonde, lingerie noire, miroir..."></textarea>
+                <button onclick="callAPI('optimize-prompt', 'pInput', 'pRes', 'text')" class="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:scale-[1.02] active:scale-95 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-pink-900/20">
+                    Optimiser le Prompt
+                </button>
+                <div id="pRes" class="mt-4 p-4 bg-black/40 rounded-xl text-sm text-pink-300 hidden border border-pink-900/20 italic"></div>
+            </section>
+
+            <section class="glass p-8 rounded-2xl border border-slate-800 shadow-2xl">
+                <div class="flex items-center mb-6">
+                    <span class="bg-purple-500/20 text-purple-400 p-2 rounded-lg mr-4">💬</span>
+                    <h2 class="text-xl font-bold">Chatter Assistant</h2>
+                </div>
+                <textarea id="cInput" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-sm focus:border-purple-500 outline-none transition mb-4" rows="5" placeholder="Colle l'historique OnlyFans ici..."></textarea>
+                <button onclick="callAPI('chat-suggest', 'cInput', 'cRes', 'suggestion')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-[1.02] active:scale-95 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-purple-900/20">
+                    Générer 3 Réponses
+                </button>
+                <div id="cRes" class="mt-4 p-4 bg-black/40 rounded-xl text-sm text-indigo-300 hidden border border-indigo-900/20 whitespace-pre-line"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        async function callAPI(endpoint, inputId, resId, dataKey) {
+            const val = document.getElementById(inputId).value;
+            const resDiv = document.getElementById(resId);
+            if(!val) return;
+
+            resDiv.classList.remove('hidden');
+            resDiv.innerText = "L'IA réfléchit...";
+
+            try {
+                const r = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(endpoint === 'optimize-prompt' ? {prompt: val} : {messageHistory: val, tone: 'seductive'})
+                });
+                const d = await r.json();
+                resDiv.innerText = d[dataKey] || "Erreur serveur";
+            } catch(e) {
+                resDiv.innerText = "Erreur : Vérifie ta connexion.";
+            }
+        }
+    </script>
+</body>
+</html>
