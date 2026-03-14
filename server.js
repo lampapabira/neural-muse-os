@@ -1,16 +1,22 @@
-{
-  "name": "neural-muse-os",
-  "version": "1.0.0",
-  "description": "Plateforme OFM assistée par IA",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "@supabase/supabase-js": "^2.39.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "helmet": "^7.1.0"
-  }
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+
+// Middlewares de sécurité et config
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+// Route de test
+app.get('/', (req, res) => {
+  res.json({ message: "Le serveur FlashOps est en ligne !", status: "OK" });
+});
+
+// Gestion du port pour Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
+});
